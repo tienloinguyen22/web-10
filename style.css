@@ -1,0 +1,34 @@
+nav.menu {
+    background-color: #D5B0AC;
+    text-align: center;
+}
+
+a {
+    color: #402E2A;
+    text-decoration: none;
+    line-height: 30px;
+}
+
+nav.menu a {
+    display: inline-block;
+    font-weight: bold;
+    width: 100px;
+    height: 30px;
+}
+
+li {
+    border: 1px solid white;
+    display: block;
+    font-weight: bold;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    background-color: #D5B0AC;
+    line-height: 30px;
+}
+
+li:hover, nav.menu a:hover {
+    color: #ffffff;
+    background-color: #9CD08F;
+    cursor: pointer;
+}
