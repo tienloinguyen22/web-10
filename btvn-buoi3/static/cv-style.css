@@ -1,0 +1,104 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Courier New, Courier, monospace;
+}
+
+div.cv {
+    width: 700px;
+    height: 600px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 350px 350px;
+    grid-template-rows: 30% 70%; 
+}
+
+
+div.cv div.header {
+    grid-column-start: 1;
+    grid-column-end:3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    display: grid;
+    grid-template-columns: 35% 65%;
+    grid-template-rows: 100%;
+    justify-self: stretch;
+    background-color: #464a51;
+    color: #ffffff;
+}
+
+div.cv div.header img {
+    border: 1px solid white;
+    grid-column-start: 1;
+    grid-column-end:2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    width: 120px;
+    height: 120px;
+    align-self: center;
+    border-radius: 50%;
+    margin-left: 130px;
+}
+
+div.cv div.header div.name {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    justify-self: center;
+    align-self: center;
+}
+
+div.cv aside {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    justify-self: stretch;
+    background-color: #acadaf;
+    color: #3b3c3d;
+}
+
+div.cv main {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    justify-self: stretch;
+    background-color: #cfd0d3;
+    color: #3b3c3d;
+}
+
+div.cv aside > div > h3 {
+    letter-spacing: 2px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+}
+
+table {
+    margin: auto;
+}
+
+td {
+    width: 150px;
+    height: 35px;
+    vertical-align: middle;
+}
+
+div.cv main h2 {
+    letter-spacing: 2px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+}
+
+div.cv main ul > li {
+    list-style: none;
+    display: block;
+    height: 35px;
+    padding-left: 70px;
+}
+
+
