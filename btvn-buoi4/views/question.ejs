@@ -1,0 +1,10 @@
+<% include ./head %>
+
+<div class='question'>
+    <p><%= question %></p>
+    <a href='/like/<%= id %>' class='like'>Like (<%= like %>)</a>
+    <a href='/dislike/<%= id %>' class='dislike'>Dislike (<%= dislike %>)</a>
+    <a href='/get-question' class='other'>Other Question</a>
+</div>
+
+<% include ./foot %>

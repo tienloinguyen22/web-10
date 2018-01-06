@@ -1,0 +1,9 @@
+<% include ./head %>
+
+<form action='/ask' method='post' enctype='application/x-www-form-urlencoded'>
+    <lable for='text-area'>Your Question:</lable>
+    <textarea id='text-area' name='question'></textarea>
+    <input type='submit' class='submit' value='Ask'>
+</form>
+
+<% include ./foot %>
