@@ -65,50 +65,54 @@ app.get('/question/:id', (req, res) => {
     fs.readFile('./database.json', {encoding: 'utf-8'}, (err, data) => {
         if (err) {console.log(err);}
         let db = JSON.parse(data);
-        for (let item of db) {
-            if (item.id == req.params.id) {
-                res.render('question', {question: item.question, like: item.like, dislike: item.dislike, id: item.id});
-                break;
+        
+        if (db.length == 0) {
+            res.render('question', {no: 'true', question: '', like: '', dislike: '', id: '', like_percent: '', dislike_percent: ''});
+        }
+        else {
+            for (let item of db) {
+                if (item.id == req.params.id) {
+                    let like_percent;
+                    let dislike_percent;
+                    if (item.like ==0 && item.dislike == 0) {
+                        like_percent = 50;
+                        dislike_percent = 50;
+                    }
+                    else {
+                        like_percent = (item.like/(item.like + item.dislike)*100).toFixed(1);
+                        dislike_percent = (item.dislike/(item.like + item.dislike)*100).toFixed(1);
+                    }
+                    res.render('question', {no: 'false', question: item.question, like: item.like, dislike: item.dislike, id: item.id, like_percent: like_percent, dislike_percent: dislike_percent});
+                    break;
+                }
             }
         }
     });
 });
 
 //Like/Dislike
-app.get('/like/:id', (req, res) => {
-    console.log('Click Like.');
+app.get('/:vote/:id', (req, res) => {
+    console.log('Click ' + req.params.vote);
     fs.readFile('./database.json', {encoding: 'utf-8'}, (err, data) => {
         if (err) {console.log(err);}
         let db = JSON.parse(data);
         for (let item of db) {
-            if (item.id == req.params.id) {
+            if (req.params.vote == 'like' && item.id == req.params.id) {
                 item.like += 1;
+                res.write(item.like + ' ' + item.dislike);
                 break;
             }
-        }
-        fs.writeFile('./database.json', JSON.stringify(db), (err) => {
-            if (err) {console.log(err);}
-        });
-    });
-    res.redirect('/question/' + req.params.id);
-});
-
-app.get('/dislike/:id', (req, res) => {
-    console.log('Click Like.');
-    fs.readFile('./database.json', {encoding: 'utf-8'}, (err, data) => {
-        if (err) {console.log(err);}
-        let db = JSON.parse(data);
-        for (let item of db) {
-            if (item.id == req.params.id) {
+            else if (req.params.vote == 'dislike' && item.id == req.params.id) {
                 item.dislike += 1;
+                res.write(item.like + ' ' + item.dislike);
                 break;
             }
         }
         fs.writeFile('./database.json', JSON.stringify(db), (err) => {
             if (err) {console.log(err);}
+            res.end();
         });
-    });
-    res.redirect('/question/' + req.params.id);
+    }); 
 });
 
 //Random a question to show
@@ -116,12 +120,15 @@ app.get('/get-question', (req, res) => {
     fs.readFile('./database.json', {encoding: 'utf-8'}, (err, data) => {
         if (err) {console.log(err);}
         let db = JSON.parse(data);
-
-        let min = 1;
-        let max = db.length;
-        let id = Math.floor(Math.random() * (max - min + 1)) + min;
-
-        res.redirect('/question/' + id);
+        if (db.length == 0 ) {
+            res.redirect('/question/0');
+        }
+        else {
+            let min = 1;
+            let max = db.length;
+            let id = Math.floor(Math.random() * (max - min + 1)) + min;
+            res.redirect('/question/' + id);
+        }
     });
 })
 
