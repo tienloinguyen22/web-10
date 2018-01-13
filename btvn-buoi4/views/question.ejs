@@ -3,67 +3,79 @@
 
 
 <div class='container' id='question' style='margin-top: 100px'>
-    <% if (no == 'true') { %>
-    <div class="alert alert-info" role="alert" style='text-align: center'>
-        We dont have any question.
-    </div>
-    <% } else { %>
-    <div class="alert alert-info" role="alert" style='text-align: center'>
-        <%= question %>
-    </div>
-    <a class="btn btn-success vote" id='like' style='color: white;'>Like ( <%= like %> )</a>
-    <a class="btn btn-danger vote" id='dislike' style='color: white;'>Dislike (<%= dislike %>)</a>
-    <a href='/get-question' class="btn btn-info" id='other'>Other Question</a>
+	<% if (no_question == 'true') { %>
+		<div class="alert alert-info" role="alert" style='text-align: center'>
+			We dont have any question.
+		</div>
+		<% } else { %>
+			<div class="alert alert-info" role="alert" style='text-align: center'>
+				<%= question.question %>
+			</div>
+			<a class="btn btn-success vote" id='like' style='color: white;'>Like (
+				<%= question.like %> )</a>
+			<a class="btn btn-danger vote" id='dislike' style='color: white;'>Dislike (
+				<%= question.dislike %>)</a>
+			<a href='/question/get-question' class="btn btn-info" id='other'>Other Question</a>
 
-    <div class="progress" style='margin-top: 30px'>
-        <div id='l' class="progress-bar bg-success progress-bar-striped" role="progressbar" style="width: <%= like_percent %>%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"><%= like_percent %>%</div>
-        <div id='d' class="progress-bar bg-danger progress-bar-striped" role="progressbar" style="width: <%= dislike_percent %>%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><%= dislike_percent %>%</div>
-    </div>
-    <% } %>
+			<div class="progress" style='margin-top: 30px'>
+				<div id='l' class="progress-bar bg-success progress-bar-striped" role="progressbar" style="width: <%= like_percent %>%" aria-valuenow="30"
+					aria-valuemin="0" aria-valuemax="100">
+					<%= like_percent %>%</div>
+				<div id='d' class="progress-bar bg-danger progress-bar-striped" role="progressbar" style="width: <%= dislike_percent %>%"
+					aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+					<%= dislike_percent %>%</div>
+			</div>
+			<% } %>
 </div>
 
 
 <script>
-    let votes = document.getElementsByClassName('vote');
-    if (votes.length > 0) {
-        for (let vote of votes) {
-            vote.addEventListener('click', function() {
-                let xhr = new XMLHttpRequest();
-                let url = '';
-                if (vote.getAttribute('id') == 'like') {
-                    url += '/like/' + document.URL.charAt(document.URL.length - 1);
-                }
-                else {
-                    url += '/dislike/' + document.URL.charAt(document.URL.length - 1);
-                }
-                console.log(url);
-                xhr.open('get', url, true);
-                xhr.onreadystatechange = function () {
-                    let arr = xhr.responseText.split(' ');
-                    let like = Number(arr[0]);
-                    let dislike = Number(arr[1]);
-                    let like_percent = (like/(like + dislike)*100).toFixed(1);
-                    let dislike_percent = (dislike/(like + dislike)*100).toFixed(1);
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        if (vote.getAttribute('id') == 'like') {
-                            console.log('like');
-                            vote.innerHTML = 'Like ( ' + arr[0] + ' )';
-                            document.getElementById('l').setAttribute('style', 'width: ' + like_percent + '%;');
-                            document.getElementById('d').setAttribute('style', 'width: ' + dislike_percent + '%;');
-                        }
-                        else if (vote.getAttribute('id') == 'dislike') {
-                            console.log('dislike');
-                            vote.innerHTML = 'Dislike ( ' + arr[1] + ' )';
-                            document.getElementById('l').setAttribute('style', 'width: ' + like_percent + '%;');
-                            document.getElementById('d').setAttribute('style', 'width: ' + dislike_percent + '%;');
-                        }
-                        console.log('ok');
-                    }
-                };
-                xhr.send();
-            }, true);
-        }
-    }
+	let votes = document.getElementsByClassName('vote');
+	if (votes.length > 0) {
+		for (let vote of votes) {
+			vote.addEventListener('click', function () {
+				let xhr = new XMLHttpRequest();
+				let url = '';
+				if (vote.getAttribute('id') == 'like') {
+					url += '/vote/like/' + document.URL.split('/')[4];
+				}
+				else {
+					url += '/vote/dislike/' + document.URL.split('/')[4];
+				}
+				console.log(url);
+				xhr.open('get', url, true);
+				xhr.onreadystatechange = function () {
+					let arr = xhr.responseText.split(' ');
+					let like = Number(arr[0]);
+					let dislike = Number(arr[1]);
+					let like_percent = (like / (like + dislike) * 100).toFixed(1);
+					let dislike_percent = (dislike / (like + dislike) * 100).toFixed(1);
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						if (vote.getAttribute('id') == 'like') {
+							console.log('like');
+							console.log(like_percent, dislike_percent);
+							vote.innerHTML = 'Like ( ' + arr[0] + ' )';
+							document.getElementById('l').setAttribute('style', 'width: ' + like_percent + '%;');
+							document.getElementById('l').innerHTML = like_percent + '%';
+							document.getElementById('d').setAttribute('style', 'width: ' + dislike_percent + '%;');
+							document.getElementById('d').innerHTML = dislike_percent + '%';
+						}
+						else {
+							console.log('dislike');
+							console.log(like_percent, dislike_percent)
+							vote.innerHTML = 'Dislike ( ' + arr[1] + ' )';
+							document.getElementById('l').setAttribute('style', 'width: ' + like_percent + '%;');
+							document.getElementById('l').innerHTML = like_percent + '%';
+							document.getElementById('d').setAttribute('style', 'width: ' + dislike_percent + '%;');
+							document.getElementById('d').innerHTML = dislike_percent + '%';
+						}
+						console.log('ok');
+					}
+				};
+				xhr.send();
+			}, true);
+		}
+	}
 </script>
 
 

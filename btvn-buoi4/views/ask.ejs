@@ -1,22 +1,22 @@
 <% include ./head %>
 
 <div class='container' style='margin-top: 100px'>
-    <form action='/ask' method='post' enctype='application/x-www-form-urlencoded'>
-        <div class='form-group'>
-            <lable for='text-area'>Your Question:</lable>
-            <textarea id='text-area' name='question' class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
-            <p id='remain'>200/200 Characters left.</p>
-            <input type='submit' class="btn btn-info" value='Ask' style='margin-top: 20px'>
-        </div>
-    </form>
+	<form action='/ask' method='post' enctype='application/x-www-form-urlencoded'>
+		<div class='form-group'>
+			<lable for='text-area'>Your Question:</lable>
+			<textarea id='text-area' name='question' class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
+			<p id='remain'>200/200 Characters left.</p>
+			<input type='submit' class="btn btn-info" value='Ask' style='margin-top: 20px'>
+		</div>
+	</form>
 </div>
 <script>
-    let text_area = document.getElementById('text-area');
-    text_area.addEventListener('keyup', () => {
-        let chars = text_area.value.length;
-        let remain_chars = 200 - chars;
-        document.getElementById('remain').innerHTML = remain_chars + '/200 Characters left.'
-    }, true);
+	let text_area = document.getElementById('text-area');
+	text_area.addEventListener('keyup', () => {
+		let chars = text_area.value.length;
+		let remain_chars = 200 - chars;
+		document.getElementById('remain').innerHTML = remain_chars + '/200 Characters left.'
+	}, true);
 </script>
 
 <% include ./foot %>
