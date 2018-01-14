@@ -17,7 +17,7 @@ router.get('/:vote/:id', (req, res) => {
 				res.end(newlike + ' ' + newdislike);
 			});
 		}
-		else if (req.params.vote = 'dislike') {
+		else if (req.params.vote == 'dislike') {
 			let newlike = result.like;
 			let newdislike = result.dislike + 1;
 			db.questions.updateOne({_id: mongodb.ObjectID(req.params.id)}, {$set: {dislike: newdislike}}, (err, resu) => {
