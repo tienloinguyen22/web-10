@@ -10,7 +10,6 @@ app.set('views', './views');
 
 //Middleware
 app.use(express.static('public'));
-app.use(require('./models'));
 app.use(require('./controllers'));
 
 
