@@ -1,0 +1,167 @@
+<% include ./header %>
+
+<div class='container mt-4'>
+
+  <h1>Register</h1>
+
+  <form action='/register' method='post' enctype="application/x-www-form-urlencoded" class='mt-3'>
+    <div class="form-group">
+      <label for="register-email">Email:</label>
+      <input type="email" class="form-control" name='email' id='register-email' placeholder="Email" required>
+      <div class="alert alert-danger d-none" role="alert" id='alert-register-email'></div>
+    </div>
+
+    <div class="form-group">
+      <label for="register-pw">Password:</label>
+      <input type="password" class="form-control" name='password' id='register-password' placeholder="Password" required>
+      <div class="alert alert-danger d-none" role="alert" id='alert-register-password'></div>
+    </div>
+
+    <div class="form-group">
+      <label for="register-pw">Password (Confirm):</label>
+      <input type="password" class="form-control" id='register-password2' placeholder="Password (Confirm)" required>
+      <div class="alert alert-danger d-none" role="alert" id='alert-register-password2'></div>
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputPassword1">First Name:</label>
+      <input type="text" class="form-control" name='f_name' placeholder="First Name" id='f_name'>
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputPassword1">Last Name:</label>
+      <input type="text" class="form-control" name='l_name' placeholder="Last Name" id='l_name'>
+    </div>
+
+    <div class="form-check">
+      <label class="form-check-label">
+        <input type="checkbox" class="form-check-input" id='checkbox'>
+        I agree with this shit.
+      </label>
+      <div class="alert alert-danger d-none" role="alert" id='alert-checkbox'></div>
+    </div>
+
+    <button type="submit" class="btn btn-info mt-3" id='register'>Register</button>
+  </form>
+
+</div>
+
+
+<script>
+
+
+let emailRegex = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; //8 chars long, at least 1 letter and 1 number
+let registerEmail = document.getElementById('register-email');
+let alertRegisterEmail = document.getElementById('alert-register-email');
+let registerPassword = document.getElementById('register-password');
+let alertRegisterPassword = document.getElementById('alert-register-password');
+let registerPassword2 = document.getElementById('register-password2');
+let alertRegisterPassword2 = document.getElementById('alert-register-password2');
+let checkBox = document.getElementById('checkbox');
+let alertCheckBox = document.getElementById('alert-checkbox');
+let registerButton = document.getElementById('register');
+let setText = function(div, text) {
+  div.classList.remove('d-none');
+  div.innerHTML = text;
+};
+
+
+//Email validation
+registerEmail.addEventListener('blur', (event) => {
+
+  //front-end: Check if it is empty or not follow the pattern
+  if (registerEmail.value.length == 0) {
+    setText(alertRegisterEmail, 'This Field is required.');
+  }
+  else if (!emailRegex.test(registerEmail.value)) {
+    setText(alertRegisterEmail, 'Invalid Email Address.');
+  }
+  else {
+  //back-end: Check if it has been used
+    alertRegisterEmail.classList.add('d-none');
+    let xhr = new XMLHttpRequest();
+    let url = '/register/check/' + registerEmail.value;
+
+    xhr.open('get', url, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        if (xhr.responseText == 'ok') {
+          alertRegisterEmail.classList.remove('d-none', 'alert-danger');
+          alertRegisterEmail.classList.add('alert-success');
+          alertRegisterEmail.innerHTML = 'U can use this email.';
+          setTimeout(() => {
+            alertRegisterEmail.classList.remove('alert-success');
+            alertRegisterEmail.classList.add('d-none', 'alert-danger');
+          }, 2000);
+        }
+        else if (xhr.responseText == 'not ok') {
+          setText(alertRegisterEmail, 'This Email has been used.');
+        }
+      }
+    };
+    xhr.send();
+  }
+}, false);
+
+
+
+//Validate password: Check if it is empty or not follow the right pattern
+registerPassword.addEventListener('blur', (event) => {
+  if (registerPassword.value.length == 0) {
+    setText(alertRegisterPassword, 'This Field is required.');
+  }
+  else if (!passwordRegex.test(registerPassword.value)) {
+    setText(alertRegisterPassword, 'Password must be longer than 8 chars. Contains at least 1 number and 1 letter.');
+  }
+  else {
+    alertRegisterPassword.classList.add('d-none');
+  }
+}, false);
+
+//Check if password confirm == password
+registerPassword2.addEventListener('blur', (event) => {
+  if (registerPassword2.value != registerPassword.value) {
+    setText(alertRegisterPassword2, 'Password didnt match.');
+  }
+  else {
+    alertRegisterPassword2.classList.add('d-none');
+  }
+}, false);
+
+
+
+//Click Register send ajax instead of normal request
+registerButton.addEventListener('click', (event) => {
+  event.preventDefault();
+  if (!checkBox.checked) {
+    setText(alertCheckBox, 'You must agree to the liciens.');
+  }
+  else if (registerPassword.value.length == 0) {
+    setText(alertRegisterPassword, 'Password cant be empty.');
+  }
+  else {
+    alertCheckBox.classList.add('d-none');
+    let xhr = new XMLHttpRequest();
+    let url = '/register';
+
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        if (xhr.responseText == 'email exist') {
+          setText(alertRegisterEmail, 'This Email has been used. Pick another one !');
+        }
+        else if (xhr.responseText == 'register success') {
+          window.location.href = 'http://localhost:8000/login';
+        }
+      }
+    };
+    xhr.send(`email=${registerEmail.value}&password=${registerPassword.value}&f_name=${document.getElementById('f_name').value}&l_name=${document.getElementById('l_name').value}`);
+  }
+}, false);
+
+</script>
+
+
+<% include ./footer %>

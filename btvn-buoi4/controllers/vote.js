@@ -4,6 +4,7 @@ let db = require('../app');
 let mongodb = require('mongodb');
 let router = express.Router();
 
+
 router.get('/:vote/:id', (req, res) => {
 	console.log(req.params.vote.toUpperCase());
 	db.questions.findOne({_id: mongodb.ObjectID(req.params.id)}, (err, result) => {
