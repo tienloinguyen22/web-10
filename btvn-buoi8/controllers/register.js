@@ -1,14 +1,7 @@
 let express = require('express');
-let body_parser = require('body-parser');
-let cookie_parser = require('cookie-parser');
-let bcrypt = require('bcrypt');
-let db = require('../app');
+let usersCollection = require('../app').users;
 let router = express.Router();
 
-const saltRound = 10;
-
-router.use(cookie_parser());
-router.use(body_parser.urlencoded({extended: false}));
 
 router.use((req, res, next) => {
   console.log(req.method.toUpperCase() + ' Request to /register');
@@ -16,49 +9,81 @@ router.use((req, res, next) => {
 });
 
 router.get('/', (req, res) => {
-  if (req.cookies.login == 'true') {
-    res.render('register', {login: 'true'});
-  }
-  else { res.render('register', {login: 'false'}); }
+  res.render('register', {email: '',
+                          emailErr: false,
+                          emailEmpty: false,
+                          username: '',
+                          usernameErr: false,
+                          usernameEmpty: false,
+                          rememberEmpty: false, 
+  });
 });
 
 router.post('/', (req, res) => {
-  db.users.findOne({email: req.body.email}, (err, result) => {
+  let emailEmpty = !req.body.email;
+  let usernameEmpty = !req.body.username;
+  let rememberEmpty = !req.body.remember;
+  let emailErr = false;
+  let usernameErr = false;
+
+  usersCollection.findOne({email: req.body.email}, (err, result) => {
     if (err) { console.log(err); }
-
     if (result) {
-      res.end('email exist');
+      console.log(result);
+      emailErr = true;
     }
-    else {
-      let new_user = {};
-      new_user.email = req.body.email;
-      new_user.f_name = req.body.f_name.toLowerCase();
-      new_user.l_name = req.body.l_name.toLowerCase();
-
-      bcrypt.hash(req.body.password, saltRound, (err, hash) => {
-        if (err) { console.log(err); }
-    
-        new_user.password = hash;
-        db.users.insertOne(new_user, (error, resu) => {
-          if (error) { console.log(error); }
-    
-          console.log(resu.ops[0]);
-          console.log('Register success.');
-          res.end('register success');
+    usersCollection.findOne({username: req.body.username}, (err, resu) => {
+      if (err) {console.log(err);}
+      if (resu) {
+        console.log(resu);
+        usernameErr = true;
+      }
+      console.log(emailEmpty, usernameEmpty, rememberEmpty, emailErr, usernameErr);
+      if (emailEmpty || usernameEmpty || rememberEmpty || emailErr || usernameErr) {
+        res.render('register', {email: req.body.email,
+                                emailErr: emailErr,
+                                emailEmpty: emailEmpty,
+                                username: req.body.username,
+                                usernameErr: usernameErr,
+                                usernameEmpty: usernameEmpty,
+                                rememberEmpty: rememberEmpty, 
         });
-      });
+      }
+      else {
+        let newUser = {};
+        newUser.email = req.body.email;
+        newUser.username = req.body.username;
+        usersCollection.insertOne(newUser, (err, resul) => {
+          if (err) {console.log(err);}
+          console.log(resul.ops[0]);
+        });
+        res.end('Register success.');
+      }
+    });
+  });
+});
+
+router.get('/email/:email', (req, res) => {
+  usersCollection.findOne({email: req.params.email}, (err, result) => {
+    if (err) {console.log(err);}
+    if (result) {
+      res.send('exist');
+    }
+    else { 
+      res.send('availble'); 
     }
   });
 });
 
-router.get('/check/:email', (req, res) => {
-  db.users.findOne({email: req.params.email}, (err, result) => {
-    if (err) { console.log(err); }
-
+router.get('/username/:username', (req, res) => {
+  usersCollection.findOne({username: req.params.username}, (err, result) => {
+    if (err) {console.log(err);}
     if (result) {
-      res.end('not ok');
+      res.send('exist');
     }
-    else { res.end('ok'); }
+    else { 
+      res.send('availble'); 
+    }
   });
 });
 

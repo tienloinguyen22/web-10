@@ -1,42 +1,35 @@
 let express = require('express');
 let mongodb = require('mongodb');
+let bodyParser = require('body-parser');
+let config = require('./config');
 let app = express();
 
 
-//Setting template engine
-app.set('view engine', 'ejs');
-app.set('views', './views');
 
-
-//Middleware
-app.use(express.static('public'));
-
-//Controller
-app.use(require('./controllers'));
-
-
-//Config
-const host = 'localhost';
-const port = 8000;
-
-
-//Startup mongodb and server
-let url = 'mongodb://localhost:27017';
-let dbName = 'web10';
-let db;
-let users_collection;
-mongodb.MongoClient.connect(url, (err, client) => {
+//Startup mongodb
+mongodb.MongoClient.connect(config.dbUrl, (err, client) => {
+  //Export collections
   if (err) { console.log(err); }
-
   console.log('Connect to mongodb success.')
-  db = client.db(dbName);
-  users_collection = db.collection('users');
+  let db = client.db(config.dbName);
+  let users = db.collection('users');
+  module.exports.users = users;
 
-  module.exports.users = users_collection;
 
-  app.listen(port, (err) => {
+  //Setting template engine
+  app.set('view engine', 'ejs');
+  app.set('views', './views');
+
+
+  //Middleware
+  app.use(express.static('public'));
+  app.use(bodyParser.urlencoded({extended: false}));
+  app.use(require('./controllers'));
+
+
+  //Start server
+  app.listen(config.port, (err) => {
     if (err) { console.log(err); }
-
-    console.log(`Listen on port ${port}.`);
+    console.log(`Listen on port ${config.port}.`);
   });
 });

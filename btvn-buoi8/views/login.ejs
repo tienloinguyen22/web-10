@@ -1,82 +1,75 @@
 <% include ./header %>
 
 <div class='container mt-4'>
+  <div class='row'>
+    <div class='col-md-3'></div>
+    <div class='col-md-6'>
+      <h1>Log In</h1>
 
-  <h1>Log In</h1>
+      <form action='/login' method='post' enctype="application/x-www-form-urlencoded" class='mt-3'>
+        <div class="form-group">
+          <label for="login-email">Email address:</label>
+          <input type="email" value='<%= email %>' class="form-control" name='email' id="login-email" placeholder="Email">
+          <div class='alert alert-danger d-none' id='alert-email'></div>
+          <% if (emailErr) { %>
+          <div class='alert alert-danger'>Email doesn't exist.</div>
+          <% } %>
+        </div>
 
-  <form action='/login' method='post' enctype="application/x-www-form-urlencoded" class='mt-3'>
-    <div class="form-group">
-      <label for="login-email">Email address:</label>
-      <input type="email" class="form-control" name='email' id="login-email" placeholder="Email" required>
-      <div class="alert alert-danger d-none" role="alert" id='alert-login-email'></div>
+        <div class="form-group">
+          <label for="login-username">Username:</label>
+          <input type="text" value='<%= username %>' class="form-control" name='username' id="login-username" placeholder="Username">
+          <div class='alert alert-danger d-none' id='alert-username'></div>
+          <% if (usernameErr) { %>
+          <div class='alert alert-danger'>Username doesn't exist.</div>
+          <% } %>
+        </div>
+
+        <div class="form-check">
+          <label class="form-check-label">
+            <input type="checkbox" class="form-check-input">
+            Remember Me
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-info mt-3" id='login'>Log In</button>
+
+      </form>
     </div>
-
-    <div class="form-group">
-      <label for="login-pw">Password:</label>
-      <input type="password" class="form-control" name='password' id="login-password" placeholder="Password" required>
-      <div class="alert alert-danger d-none" role="alert" id='alert-login-password'></div>
-    </div>
-
-    <div class="form-check">
-      <label class="form-check-label">
-        <input type="checkbox" class="form-check-input" name='remember'>
-        Remember Me
-      </label>
-    </div>
-    <button type="submit" class="btn btn-info mt-3" id='login'>Log In</button>
-  </form>
-
+    <div class='col-md-3'></div>
+  </div>
 </div>
 
 <script>
-
-
-let emailRegex = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
-let loginEmail = document.getElementById('login-email');
-let loginPassword = document.getElementById('login-password');
-let alertLoginEmail = document.getElementById('alert-login-email');
-let alertLoginPassword = document.getElementById('alert-login-password');
-let loginButton = document.getElementById('login');
-let setText = function(div, text) {
+let email = document.getElementById('login-email');
+let username = document.getElementById('login-username');
+let alertEmail = document.getElementById('alert-email');
+let alertUsername = document.getElementById('alert-username');
+let emailRegex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
+let setText = (div, text) => {
   div.classList.remove('d-none');
   div.innerHTML = text;
 };
 
-//Email validation: Check if it is empty or not follow the right pattern
-loginEmail.addEventListener('blur', (event) => {
-  if (loginEmail.value.length == 0) {
-    setText(alertLoginEmail, 'This Field is required.');
+email.addEventListener('blur', (event) => {
+  if (email.value.length == 0) {
+    setText(alertEmail, 'Email is empty.');
   }
-  else if (!emailRegex.test(loginEmail.value)) {
-    setText(alertLoginEmail, 'Invalid Email Address.');
+  else if (!emailRegex.test(email.value)) {
+    setText(alertEmail, 'Invalid email address.');
   }
   else {
-    alertLoginEmail.classList.add('d-none');
+    alertEmail.classList.add('d-none');
   }
 }, false);
 
-//Email validattion: Click 'Log in' button send ajax instead of normal request
-loginButton.addEventListener('click', (event) => {
-  event.preventDefault();
-  let xhr = new XMLHttpRequest();
-  let url = '/login';
-  xhr.open('POST', url, true);
-  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      if (xhr.responseText == 'wrong password') {
-        setText(alertLoginPassword, 'Wrong Password.');
-      }
-      else if (xhr.responseText == 'email doesnt exist') {
-        setText(alertLoginEmail, 'Email Doesnt Exist.');
-      }
-      else if (xhr.responseText == 'login success') {
-        alertLoginPassword.classList.add('d-none');
-        window.location.href = 'http://localhost:8000';
-      }
-    }
-  };
-  xhr.send(`email=${loginEmail.value}&password=${loginPassword.value}`);
+username.addEventListener('blur', (event) => {
+  if (username.value.length == 0) {
+    setText(alertUsername, 'Username is empty.');
+  }
+  else {
+    alertUsername.classList.add('d-none');
+  }
 }, false);
 
 </script>
