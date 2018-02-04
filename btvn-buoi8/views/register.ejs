@@ -11,11 +11,11 @@
           <label for="register-email">Email address:</label>
           <input type="email" value='<%= email %>'class="form-control" name='email' id="register-email" placeholder="Email">
           <div class='alert alert-danger d-none' id='alert-email'></div>
-          <% if (emailErr) { %>
-          <div class='alert alert-danger'>Email has been used.</div>
+          <% if (emailExist) { %>
+          <div class='alert alert-danger' id='alert-email2'>Email has been used.</div>
           <% } %>
           <% if (emailEmpty) { %>
-          <div class='alert alert-danger'>Email is empty.</div>
+          <div class='alert alert-danger' id='alert-email2'>Email is empty.</div>
           <% } %>
         </div>
 
@@ -23,11 +23,11 @@
           <label for="register-username">Username:</label>
           <input type="text" value='<%= username %>' class="form-control" name='username' id="register-username" placeholder="Username">
           <div class='alert alert-danger d-none' id='alert-username'></div>
-          <% if (usernameErr) { %>
-          <div class='alert alert-danger'>Username doesn't exist.</div>
+          <% if (usernameExist) { %>
+          <div class='alert alert-danger' id='alert-username2'>Username doesn't exist.</div>
           <% } %>
           <% if (usernameEmpty) { %>
-          <div class='alert alert-danger'>Username is empty.</div>
+          <div class='alert alert-danger' id='alert-username2'>Username is empty.</div>
           <% } %>
         </div>
 
@@ -54,6 +54,8 @@ let email = document.getElementById('register-email');
 let username = document.getElementById('register-username');
 let alertEmail = document.getElementById('alert-email');
 let alertUsername = document.getElementById('alert-username');
+let alertEmail2 = document.getElementById('alert-email2');
+let alertUsername2 = document.getElementById('alert-username2');
 let emailRegex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
 let setText = (div, text) => {
   div.classList.remove('d-none');
@@ -61,6 +63,10 @@ let setText = (div, text) => {
 };
 
 email.addEventListener('blur', (event) => {
+  if (alertEmail2) {
+    alertEmail2.classList.add('d-none');
+  }
+
   if (email.value.length == 0) {
     setText(alertEmail, 'Email is empty.');
   }
@@ -70,7 +76,7 @@ email.addEventListener('blur', (event) => {
   else {
     alertEmail.classList.add('d-none');
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', '/register/email/' + email.value, true);
+    xhr.open('GET', '/register/check-email/' + email.value, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         if (xhr.responseText == 'exist') {
@@ -86,12 +92,16 @@ email.addEventListener('blur', (event) => {
 }, false);
 
 username.addEventListener('blur', (event) => {
+  if (alertUsername2) {
+    alertUsername2.classList.add('d-none');
+  }
+
   if (username.value.length == 0) {
     setText(alertUsername, 'Username is empty.');
   }
   else {
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', '/register/username/' + username.value, true);
+    xhr.open('GET', '/register/check-username/' + username.value, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         if (xhr.responseText == 'exist') {

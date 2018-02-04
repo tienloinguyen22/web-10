@@ -10,10 +10,10 @@ router.use((req, res, next) => {
 
 router.get('/', (req, res) => {
   res.render('register', {email: '',
-                          emailErr: false,
+                          emailExist: false,
                           emailEmpty: false,
                           username: '',
-                          usernameErr: false,
+                          usernameExist: false,
                           usernameEmpty: false,
                           rememberEmpty: false, 
   });
@@ -23,28 +23,27 @@ router.post('/', (req, res) => {
   let emailEmpty = !req.body.email;
   let usernameEmpty = !req.body.username;
   let rememberEmpty = !req.body.remember;
-  let emailErr = false;
-  let usernameErr = false;
+  let emailExist = false;
+  let usernameExist = false;
 
   usersCollection.findOne({email: req.body.email}, (err, result) => {
     if (err) { console.log(err); }
     if (result) {
       console.log(result);
-      emailErr = true;
+      emailExist = true;
     }
     usersCollection.findOne({username: req.body.username}, (err, resu) => {
       if (err) {console.log(err);}
       if (resu) {
         console.log(resu);
-        usernameErr = true;
+        usernameExist = true;
       }
-      console.log(emailEmpty, usernameEmpty, rememberEmpty, emailErr, usernameErr);
-      if (emailEmpty || usernameEmpty || rememberEmpty || emailErr || usernameErr) {
+      if (emailEmpty || usernameEmpty || rememberEmpty || emailExist || usernameExist) {
         res.render('register', {email: req.body.email,
-                                emailErr: emailErr,
+                                emailExist: emailExist,
                                 emailEmpty: emailEmpty,
                                 username: req.body.username,
-                                usernameErr: usernameErr,
+                                usernameExist: usernameExist,
                                 usernameEmpty: usernameEmpty,
                                 rememberEmpty: rememberEmpty, 
         });
@@ -63,7 +62,7 @@ router.post('/', (req, res) => {
   });
 });
 
-router.get('/email/:email', (req, res) => {
+router.get('/check-email/:email', (req, res) => {
   usersCollection.findOne({email: req.params.email}, (err, result) => {
     if (err) {console.log(err);}
     if (result) {
@@ -75,7 +74,7 @@ router.get('/email/:email', (req, res) => {
   });
 });
 
-router.get('/username/:username', (req, res) => {
+router.get('/check-username/:username', (req, res) => {
   usersCollection.findOne({username: req.params.username}, (err, result) => {
     if (err) {console.log(err);}
     if (result) {

@@ -12,7 +12,7 @@
           <input type="email" value='<%= email %>' class="form-control" name='email' id="login-email" placeholder="Email">
           <div class='alert alert-danger d-none' id='alert-email'></div>
           <% if (emailErr) { %>
-          <div class='alert alert-danger'>Email doesn't exist.</div>
+          <div class='alert alert-danger' id='alert-email2'>Email doesn't exist.</div>
           <% } %>
         </div>
 
@@ -21,7 +21,7 @@
           <input type="text" value='<%= username %>' class="form-control" name='username' id="login-username" placeholder="Username">
           <div class='alert alert-danger d-none' id='alert-username'></div>
           <% if (usernameErr) { %>
-          <div class='alert alert-danger'>Username doesn't exist.</div>
+          <div class='alert alert-danger' id='alert-username2'>Username doesn't exist.</div>
           <% } %>
         </div>
 
@@ -46,12 +46,18 @@ let username = document.getElementById('login-username');
 let alertEmail = document.getElementById('alert-email');
 let alertUsername = document.getElementById('alert-username');
 let emailRegex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
+let alertEmail2 = document.getElementById('alert-email2');
+let alertUsernam2 = document.getElementById('alert-username2');
 let setText = (div, text) => {
   div.classList.remove('d-none');
   div.innerHTML = text;
 };
 
 email.addEventListener('blur', (event) => {
+  if (alertEmail2) {
+    alertEmail2.classList.add('d-none');
+  }
+
   if (email.value.length == 0) {
     setText(alertEmail, 'Email is empty.');
   }
@@ -64,6 +70,10 @@ email.addEventListener('blur', (event) => {
 }, false);
 
 username.addEventListener('blur', (event) => {
+  if (alertUsernam2) {
+    alertUsernam2.classList.add('d-none');
+  }
+  
   if (username.value.length == 0) {
     setText(alertUsername, 'Username is empty.');
   }

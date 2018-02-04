@@ -8,7 +8,6 @@ let app = express();
 
 //Startup mongodb
 mongodb.MongoClient.connect(config.dbUrl, (err, client) => {
-  //Export collections
   if (err) { console.log(err); }
   console.log('Connect to mongodb success.')
   let db = client.db(config.dbName);

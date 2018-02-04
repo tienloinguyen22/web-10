@@ -16,25 +16,30 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  let emailErr = false;
+  let usernameErr = false;
+
   usersCollection.findOne({email: req.body.email}, (err, result) => {
-    if (err) { console.log(err); }
+    if (err) {console.log(err);}
     if (result) {
       if (req.body.username == result.username) {
         res.end('Login success.')
       }
       else {
+        usernameErr = true;
         res.render('login', {email: req.body.email,
-                             emailErr: false,
+                             emailErr: emailErr,
                              username: req.body.username,
-                             usernameErr: true
+                             usernameErr: usernameErr
         });
       }
     }
     else {
+      emailErr = true;
       res.render('login', {email: req.body.email,
-                           emailErr: true,
+                           emailErr: emailErr,
                            username: req.body.username,
-                           usernameErr: false
+                           usernameErr: usernameErr
       });
     }
   });
